@@ -34,6 +34,7 @@ class GlobalState {
 
   String? lastConfigMd5;
   bool isAttach = false;
+  String? pendingCrashMessage;
 
   GlobalState._internal();
 

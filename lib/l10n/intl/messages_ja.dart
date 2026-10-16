@@ -194,6 +194,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "accessControlDisabledDesc": MessageLookupByLibrary.simpleMessage(
       "アプリアクセス制御は無効です",
     ),
+    "definedApps": MessageLookupByLibrary.simpleMessage("定義済みアプリ"),
+    "packageName": MessageLookupByLibrary.simpleMessage("パッケージ名"),
     "accessControlNotAllowDesc": MessageLookupByLibrary.simpleMessage(
       "選択したアプリはVPNから除外されます",
     ),
@@ -610,6 +612,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "error": MessageLookupByLibrary.simpleMessage("エラー"),
     "errorDetails": MessageLookupByLibrary.simpleMessage("エラーの詳細"),
     "exclude": MessageLookupByLibrary.simpleMessage("最近のタスクから隠す"),
+    "keep": MessageLookupByLibrary.simpleMessage("最近のタスクから削除"),
+    "keepDesc": MessageLookupByLibrary.simpleMessage("アプリが最近のタスクから削除されてもVPNサービスを維持"),
     "excludeFilter": MessageLookupByLibrary.simpleMessage("除外フィルター"),
     "excludeInterface": MessageLookupByLibrary.simpleMessage("除外インターフェース"),
     "excludeInterfaceDesc": MessageLookupByLibrary.simpleMessage(

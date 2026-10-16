@@ -36,11 +36,13 @@ class ProxiesTabViewState extends ConsumerState<ProxiesTabView>
       if (prev == next) {
         return;
       }
-      if (!stringListEquality.equals(prev?.groupNames, next.groupNames)) {
-        final groupNames = next.groupNames;
-        final currentGroupName = next.currentGroupName;
+      final groupNames = next.groupNames;
+      final currentGroupName = next.currentGroupName;
+      if (!stringListEquality.equals(prev?.groupNames, groupNames)) {
         final index = groupNames.indexWhere((item) => item == currentGroupName);
         _updateTabController(groupNames.length, index);
+      } else if (!groupNames.contains(currentGroupName)) {
+        _tabControllerListener(_tabController?.index);
       }
     }, fireImmediately: true);
   }

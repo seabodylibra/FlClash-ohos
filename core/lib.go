@@ -1,4 +1,4 @@
-//go:build android
+//go:build android || openharmony
 
 package core
 
@@ -110,7 +110,7 @@ func (th *TunHandler) handleResolveProcess(source, target net.Addr) (int, string
 		protocol = syscall.IPPROTO_TCP
 	}
 	var uid int
-	if sdkVersion.Load() < 29 {
+	if sdkVersion.Load() < uidProcfsThreshold {
 		uid = platform.QuerySocketUidFromProcFs(source, target)
 	} else {
 		uid = th.callbacks.ResolveUid(protocol, source.String(), target.String())

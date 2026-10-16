@@ -91,6 +91,13 @@ class SetupAction extends _$SetupAction {
     _syncRuntimeTicker();
   }
 
+  void handleCrash() {
+    _startTime = null;
+    _stopRuntimeTicker();
+    _updateRunTime();
+    unawaited(app?.stopBackgroundRunning());
+  }
+
   void _syncRuntimeTicker() {
     if (_startTime == null || !_isTrafficShown) {
       _stopRuntimeTicker();
@@ -132,7 +139,7 @@ class SetupAction extends _$SetupAction {
     if (!globalState.needInitStatus) {
       return;
     }
-    if (system.isAndroid) {
+    if (system.isAndroid || system.isOhos) {
       await _updateStartTime();
     }
     final shouldRun = _isRunning || ref.read(appSettingProvider).autoRun;
@@ -659,7 +666,7 @@ class SetupAction extends _$SetupAction {
     // has no proxies, so until this push succeeds no applied config is known.
     _appliedInputs = null;
     globalState.lastConfigMd5 = null;
-    if (system.isAndroid) {
+    if (system.isAndroid || system.isOhos) {
       await ref.read(vpnOptionsProvider.future);
       await preferences.saveShareState(ref.read(sharedStateProvider));
     }

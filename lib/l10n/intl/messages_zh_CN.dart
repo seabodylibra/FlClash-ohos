@@ -189,6 +189,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "accessControlDisabledDesc": MessageLookupByLibrary.simpleMessage(
       "应用访问控制已关闭",
     ),
+    "definedApps": MessageLookupByLibrary.simpleMessage("自定义应用"),
+    "packageName": MessageLookupByLibrary.simpleMessage("包名"),
     "accessControlNotAllowDesc": MessageLookupByLibrary.simpleMessage(
       "选中应用将会被排除在VPN之外",
     ),
@@ -559,6 +561,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "error": MessageLookupByLibrary.simpleMessage("错误"),
     "errorDetails": MessageLookupByLibrary.simpleMessage("错误详情"),
     "exclude": MessageLookupByLibrary.simpleMessage("从最近任务中隐藏"),
+    "keep": MessageLookupByLibrary.simpleMessage("从最近任务中移除"),
+    "keepDesc": MessageLookupByLibrary.simpleMessage("应用从最近任务中移除时,保持VPN服务运行"),
     "excludeFilter": MessageLookupByLibrary.simpleMessage("排除筛选"),
     "excludeInterface": MessageLookupByLibrary.simpleMessage("排除网卡"),
     "excludeInterfaceDesc": MessageLookupByLibrary.simpleMessage(

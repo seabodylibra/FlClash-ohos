@@ -12,6 +12,20 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+List<Package> definedPackagesToList(Map<String, String> definedPackages) {
+  return definedPackages.entries
+      .map(
+        (entry) => Package(
+          packageName: entry.key,
+          label: entry.value,
+          system: false,
+          internet: true,
+          lastUpdateTime: 0,
+        ),
+      )
+      .toList();
+}
+
 class AccessView extends ConsumerStatefulWidget {
   const AccessView({super.key});
 
@@ -53,6 +67,7 @@ class _AccessViewState extends ConsumerState<AccessView>
   void didSettleRoute() => _completer.complete(_loadPackages());
 
   Future<void> _loadPackages() async {
+    if (system.isOhos) return;
     final action = ref.read(systemActionProvider.notifier);
     final packages = await action.getPackages();
     final granted =
@@ -63,6 +78,60 @@ class _AccessViewState extends ConsumerState<AccessView>
     setState(() {
       _installedAppsPermissionGranted = granted;
     });
+  }
+
+  List<Package> _readPackages() {
+    return system.isOhos
+        ? definedPackagesToList(ref.read(definedPackagesProvider))
+        : ref.read(packagesProvider);
+  }
+
+  Future<void> _handleEditDefinedPackages() async {
+    final appLocalizations = context.appLocalizations;
+    var definedPackages = ref.read(definedPackagesProvider);
+    if (system.isOhos) {
+      final packages = await app?.getPackages() ?? [];
+      definedPackages = {
+        ...definedPackages,
+        for (final package in packages) package.packageName: package.label,
+      };
+      if (!mounted) return;
+    }
+    final result = await showExtend<Map<String, String>>(
+      context,
+      builder: (_) => MapEditView(
+        title: appLocalizations.definedApps,
+        entries: definedPackages,
+        keyLabel: appLocalizations.packageName,
+        valueLabel: appLocalizations.name,
+        titleBuilder: (item) => Text(item.value),
+        subtitleBuilder: (item) => Text(item.key),
+      ),
+    );
+    if (result == null) {
+      return;
+    }
+    final removedPackageNames = definedPackages.keys.toSet().difference(
+      result.keys.toSet(),
+    );
+    ref.read(definedPackagesProvider.notifier).value = result;
+    if (removedPackageNames.isEmpty) {
+      return;
+    }
+    AccessControlProps prune(AccessControlProps props) => props.copyWith(
+      acceptList: props.acceptList
+          .where((item) => !removedPackageNames.contains(item))
+          .toList(),
+      rejectList: props.rejectList
+          .where((item) => !removedPackageNames.contains(item))
+          .toList(),
+    );
+    ref.read(accessControlStateProvider.notifier).update(prune);
+    ref
+        .read(vpnSettingProvider.notifier)
+        .update(
+          (state) => state.copyWith(accessControlProps: prune(state.accessControlProps)),
+        );
   }
 
   Future<void> _handleGrantInstalledAppsPermission() async {
@@ -207,7 +276,7 @@ class _AccessViewState extends ConsumerState<AccessView>
   AccessControlProps _getRealAccessControlProps(
     AccessControlProps accessControl,
   ) {
-    final packages = ref.read(packagesProvider);
+    final packages = _readPackages();
     if (packages.isEmpty) {
       return accessControl;
     }
@@ -304,6 +373,12 @@ class _AccessViewState extends ConsumerState<AccessView>
             label: appLocalizations.clipboardImport,
             onPressed: _importFormClipboard,
           ),
+          if (system.isOhos)
+            CommonPopupMenuItem(
+              glyph: AppGlyphs.edit,
+              label: appLocalizations.definedApps,
+              onPressed: _handleEditDefinedPackages,
+            ),
         ],
       ),
     ];
@@ -433,7 +508,9 @@ class _AccessViewState extends ConsumerState<AccessView>
   Widget build(BuildContext context) {
     final isLoading = ref.watch(loadingProvider(LoadingTag.access));
     final query = SearchQuery(ref.watch(queryProvider(QueryTag.access)));
-    final packages = ref.watch(packagesProvider);
+    final packages = system.isOhos
+        ? definedPackagesToList(ref.watch(definedPackagesProvider))
+        : ref.watch(packagesProvider);
     final accessControl = ref.watch(accessControlStateProvider);
     final viewPackages = packages
         .getViewList(

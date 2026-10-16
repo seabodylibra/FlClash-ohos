@@ -73,11 +73,19 @@ class _LogsViewState extends ConsumerState<LogsView>
   List<IconButtonData> _buildActions() {
     return [
       IconButtonData(
+        glyph: AppGlyphs.delete,
+        onPressed: _handleClear,
+      ),
+      IconButtonData(
         glyph: AppGlyphs.export,
         tooltip: context.appLocalizations.exportLogs,
         onPressed: _handleExport,
       ),
     ];
+  }
+
+  void _handleClear() {
+    ref.read(logsProvider.notifier).clear();
   }
 
   @override

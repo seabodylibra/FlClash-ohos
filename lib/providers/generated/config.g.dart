@@ -581,6 +581,58 @@ abstract class _$ExcludeSSIDs extends $Notifier<List<String>> {
   }
 }
 
+@ProviderFor(DefinedPackages)
+final definedPackagesProvider = DefinedPackagesProvider._();
+
+final class DefinedPackagesProvider
+    extends $NotifierProvider<DefinedPackages, Map<String, String>> {
+  DefinedPackagesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'definedPackagesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$definedPackagesHash();
+
+  @$internal
+  @override
+  DefinedPackages create() => DefinedPackages();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Map<String, String> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Map<String, String>>(value),
+    );
+  }
+}
+
+String _$definedPackagesHash() => r'39beafbd0e6e0f8844c61fe208584e72bc331fdc';
+
+abstract class _$DefinedPackages extends $Notifier<Map<String, String>> {
+  Map<String, String> build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<Map<String, String>, Map<String, String>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<Map<String, String>, Map<String, String>>,
+              Map<String, String>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(_config)
 final configProvider = _ConfigProvider._();
 

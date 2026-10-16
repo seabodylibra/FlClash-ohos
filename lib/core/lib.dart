@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/plugins/app.dart';
 import 'package:fl_clash/plugins/service.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
@@ -115,6 +116,7 @@ class CoreLib extends CoreHandlerInterface {
   Future<bool> startListener() async {
     final listenerStarted = await super.startListener();
     final serviceStarted = await _service?.start() ?? false;
+    await app?.startBackgroundRunning();
     return listenerStarted && serviceStarted;
   }
 
@@ -122,6 +124,7 @@ class CoreLib extends CoreHandlerInterface {
   Future<bool> stopListener() async {
     final serviceStopped = await _service?.stop() ?? false;
     final listenerStopped = await super.stopListener();
+    await app?.stopBackgroundRunning();
     return serviceStopped && listenerStopped;
   }
 
@@ -161,4 +164,4 @@ class CoreLib extends CoreHandlerInterface {
   }
 }
 
-CoreLib? get coreLib => system.isAndroid ? CoreLib() : null;
+CoreLib? get coreLib => system.isAndroid || system.isOhos ? CoreLib() : null;

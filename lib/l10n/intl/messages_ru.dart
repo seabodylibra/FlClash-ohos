@@ -219,6 +219,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "accessControlDisabledDesc": MessageLookupByLibrary.simpleMessage(
       "Контроль доступа приложений отключён",
     ),
+    "definedApps": MessageLookupByLibrary.simpleMessage("Заданные приложения"),
+    "packageName": MessageLookupByLibrary.simpleMessage("Имя пакета"),
     "accessControlNotAllowDesc": MessageLookupByLibrary.simpleMessage(
       "Выбранные приложения исключаются из VPN",
     ),
@@ -753,6 +755,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "error": MessageLookupByLibrary.simpleMessage("Ошибка"),
     "errorDetails": MessageLookupByLibrary.simpleMessage("Подробности ошибки"),
     "exclude": MessageLookupByLibrary.simpleMessage("Скрыть из недавних задач"),
+    "keep": MessageLookupByLibrary.simpleMessage("Удалить из последних задач"),
+    "keepDesc": MessageLookupByLibrary.simpleMessage("Поддерживать работу VPN-сервиса при удалении приложения из последних задач"),
     "excludeFilter": MessageLookupByLibrary.simpleMessage("Фильтр исключения"),
     "excludeInterface": MessageLookupByLibrary.simpleMessage(
       "Исключённые интерфейсы",

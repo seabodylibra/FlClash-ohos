@@ -216,6 +216,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "accessControlDisabledDesc": MessageLookupByLibrary.simpleMessage(
       "App access control is disabled",
     ),
+    "definedApps": MessageLookupByLibrary.simpleMessage("Defined apps"),
+    "packageName": MessageLookupByLibrary.simpleMessage("Package name"),
     "accessControlNotAllowDesc": MessageLookupByLibrary.simpleMessage(
       "Selected apps are excluded from the VPN",
     ),
@@ -722,6 +724,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "error": MessageLookupByLibrary.simpleMessage("Error"),
     "errorDetails": MessageLookupByLibrary.simpleMessage("Error details"),
     "exclude": MessageLookupByLibrary.simpleMessage("Hide from recent tasks"),
+    "keep": MessageLookupByLibrary.simpleMessage("Remove from recents"),
+    "keepDesc": MessageLookupByLibrary.simpleMessage("Keep the VPN service alive when the app is removed from recent tasks"),
     "excludeFilter": MessageLookupByLibrary.simpleMessage("Exclude filter"),
     "excludeInterface": MessageLookupByLibrary.simpleMessage(
       "Excluded interfaces",

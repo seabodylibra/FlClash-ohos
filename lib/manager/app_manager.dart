@@ -90,6 +90,11 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
     _updateVisible(state);
     if (state == AppLifecycleState.resumed) {
       unawaited(ref.read(locationPermissionsProvider.notifier).refresh());
+      final pendingCrashMessage = globalState.pendingCrashMessage;
+      if (pendingCrashMessage != null) {
+        globalState.pendingCrashMessage = null;
+        context.showNotifier(pendingCrashMessage);
+      }
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) {
           return;
