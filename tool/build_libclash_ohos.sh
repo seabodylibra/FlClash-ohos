@@ -6,9 +6,10 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CORE_DIR="$SCRIPT_DIR/../../core"
-OUTPUT_DIR="${1:-$SCRIPT_DIR/../../ohos/entry/libs/arm64-v8a}"
-INCLUDE_DIR="$SCRIPT_DIR/../../ohos/core/src/main/cpp/includes/arm64-v8a"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+CORE_DIR="$PROJECT_DIR/core"
+OUTPUT_DIR="${1:-$PROJECT_DIR/ohos/entry/libs/arm64-v8a}"
+INCLUDE_DIR="$PROJECT_DIR/ohos/core/src/main/cpp/includes/arm64-v8a"
 
 if [ -z "$OHOS_NDK_HOME" ]; then
     echo "Error: OHOS_NDK_HOME not set"

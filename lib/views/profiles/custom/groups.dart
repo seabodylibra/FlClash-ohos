@@ -724,7 +724,7 @@ class _EditProxyGroupViewState extends ConsumerState<EditProxyGroupView> {
     TextStyle? titleStyle,
     Widget? leading,
     Widget? trailing,
-    final VoidCallback? onPressed,
+    VoidCallback? onPressed,
     bool invalid = false,
   }) {
     return FormRow(

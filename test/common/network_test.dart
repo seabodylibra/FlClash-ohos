@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:fl_clash/common/network.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class _FakeAddress implements InterfaceAddress {
+class _FakeAddress implements InternetAddress {
   _FakeAddress(this.address, this.type);
 
   @override
@@ -23,16 +23,16 @@ class _FakeInterface implements NetworkInterface {
   final String name;
 
   @override
-  final List<InterfaceAddress> addresses;
+  final List<InternetAddress> addresses;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-InterfaceAddress _v4(String address) =>
+InternetAddress _v4(String address) =>
     _FakeAddress(address, InternetAddressType.IPv4);
 
-InterfaceAddress _v6(String address) =>
+InternetAddress _v6(String address) =>
     _FakeAddress(address, InternetAddressType.IPv6);
 
 void main() {

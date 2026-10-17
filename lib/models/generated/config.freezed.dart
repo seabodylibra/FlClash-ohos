@@ -3327,12 +3327,13 @@ class _Config implements Config {
 @override@JsonKey() final  WindowProps windowProps;
 @override@JsonKey() final  PatchClashConfig patchClashConfig;
  final  List<String> _excludeSSIDs;
- final  Map<String, String> _definedPackages;
 @override@JsonKey() List<String> get excludeSSIDs {
   if (_excludeSSIDs is EqualUnmodifiableListView) return _excludeSSIDs;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_excludeSSIDs);
 }
+
+ final  Map<String, String> _definedPackages;
 @override@JsonKey() Map<String, String> get definedPackages {
   if (_definedPackages is EqualUnmodifiableMapView) return _definedPackages;
   // ignore: implicit_dynamic_type
