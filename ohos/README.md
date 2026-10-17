@@ -61,6 +61,12 @@ bootstrap with the real OHOS SDK. Shared preferences use the existing atomic
 file store inside the app's sandbox. OHOS has no path-provider downloads API;
 the app uses its sandbox directory when it needs a download fallback.
 
+File imports use `FilePickerPlugin` and the OHOS document picker. The selected
+document is copied asynchronously into the app cache while its URI permission
+is valid; Dart reads that copy and retains the original filename. Cancellation
+returns no file, and concurrent picker requests are rejected. File export and
+gallery QR scanning still need their own OHOS implementations and device checks.
+
 The app has not passed device verification. A device test of the earlier package
 reached Flutter but failed on the missing device-info channel; the startup
 platform implementations above address that failure and the other bootstrap

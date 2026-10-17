@@ -3,11 +3,13 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/plugins/ohos_file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class Picker {
   Future<PlatformFile?> pickerFile() async {
+    if (system.isOhos) return OhosFilePicker.pickFile();
     return FilePicker.pickFile(initialDirectory: await appPath.downloadDirPath);
   }
 
@@ -17,7 +19,10 @@ class Picker {
       initialDirectory: await appPath.downloadDirPath,
       bytes: bytes,
     );
-    if (!system.isAndroid && !system.isOhos && uri != null && uri.scheme == 'file') {
+    if (!system.isAndroid &&
+        !system.isOhos &&
+        uri != null &&
+        uri.scheme == 'file') {
       final file = File(uri.toFilePath());
       await file.safeWriteAsBytes(bytes);
     }

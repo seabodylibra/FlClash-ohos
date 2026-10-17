@@ -15,6 +15,7 @@ import ServicePlugin from '../plugins/ServicePlugin';
 import AbilityConstant from '@ohos.app.ability.AbilityConstant';
 import AppPlugin from '../plugins/AppPlugin';
 import PlatformPlugin from '../plugins/PlatformPlugin';
+import FilePickerPlugin from '../plugins/FilePickerPlugin';
 import NotificationManager from '../managers/NotificationManager';
 
 interface Connection {
@@ -67,6 +68,7 @@ export default class EntryAbility extends FlutterAbility {
     super.configureFlutterEngine(flutterEngine)
     flutterEngine.getPlugins()?.add(new AppPlugin(this))
     flutterEngine.getPlugins()?.add(new PlatformPlugin(this.context))
+    flutterEngine.getPlugins()?.add(new FilePickerPlugin(this.context))
     flutterEngine.getPlugins()?.add(new ServicePlugin(this))
     GeneratedPluginRegistrant.registerWith(flutterEngine)
   }
