@@ -2,6 +2,8 @@
 
 ## Windows follow-up (2026-10-17)
 
+- Go's `-buildmode=c-shared` cannot be loaded by musl's `dlopen` (golang/go#54805): the library carries an `R_AARCH64_TLS_TPREL64` initial-exec TLS relocation, and musl rejects any such library loaded after startup with `initial-exec TLS resolves to dynamic definition`. OHOS loads `libclash.so` via `requireNapi`, so every package shipped a Core that never loaded. Build `libclash.so` with the patched Go toolchain at `D:\HarmonyOS-Dev\Tools\go-musl` (jgowdy/go `1a087d05`, GD/TLSDESC TLS for c-shared plus the musl argv fix) and verify `llvm-readelf -r libclash.so` shows `TLSDESC` rather than `TLS_TPREL64` before packaging.
+
 - The `d200c44` package registered `core`, but ArkTS imports still failed with `SyntaxError: the requested module 'core' does not provide an export name 'invokeMethod'`: `napi_define_properties` used `napi_default`, whose properties are not enumerable, so the ESM namespace stayed empty. `2026101706` defines the ten methods with `napi_default_jsproperty`; device retest pending.
 - The workspace moved to the space-free path `D:\Projects\FlClash-ohos`. `D:\Projects\fix-flclash-shortcut.ps1` recreates the old `D:\Projects\flclash ohos` path as a junction once the tool that holds it (the running OpenCode process) exits.
 
