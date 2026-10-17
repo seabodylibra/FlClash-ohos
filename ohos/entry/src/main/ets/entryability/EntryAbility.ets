@@ -14,6 +14,7 @@ import { ChunkedSender, ChunkedReader } from '../utils/Rpc';
 import ServicePlugin from '../plugins/ServicePlugin';
 import AbilityConstant from '@ohos.app.ability.AbilityConstant';
 import AppPlugin from '../plugins/AppPlugin';
+import PlatformPlugin from '../plugins/PlatformPlugin';
 import NotificationManager from '../managers/NotificationManager';
 
 interface Connection {
@@ -65,6 +66,7 @@ export default class EntryAbility extends FlutterAbility {
   configureFlutterEngine(flutterEngine: FlutterEngine): void {
     super.configureFlutterEngine(flutterEngine)
     flutterEngine.getPlugins()?.add(new AppPlugin(this))
+    flutterEngine.getPlugins()?.add(new PlatformPlugin(this.context))
     flutterEngine.getPlugins()?.add(new ServicePlugin(this))
     GeneratedPluginRegistrant.registerWith(flutterEngine)
   }

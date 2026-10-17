@@ -27,8 +27,8 @@ class AppPath {
       getApplicationCacheDirectory;
 
   @visibleForTesting
-  static Future<Directory?> Function() downloadDirectory =
-      getDownloadsDirectory;
+  static Future<Directory?> Function() downloadDirectory = () =>
+      Platform.isOhos ? Future<Directory?>.value() : getDownloadsDirectory();
 
   AppPath._internal() {
     appDirPath = join(dirname(Platform.resolvedExecutable));

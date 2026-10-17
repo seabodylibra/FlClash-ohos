@@ -54,10 +54,21 @@ class System {
       ),
       _ => false,
     };
-    return switch (Platform.operatingSystem) {
+    return deviceApiVersion(
+      deviceInfo,
+      operatingSystem: Platform.operatingSystem,
+    );
+  }
+
+  @visibleForTesting
+  static int deviceApiVersion(
+    BaseDeviceInfo deviceInfo, {
+    required String operatingSystem,
+  }) {
+    return switch (operatingSystem) {
       'macos' => (deviceInfo as MacOsDeviceInfo).majorVersion,
       'android' => (deviceInfo as AndroidDeviceInfo).version.sdkInt,
-      'ohos' => (deviceInfo as dynamic).sdkApiVersion as int,
+      'ohos' => deviceInfo.data['sdkApiVersion'] as int,
       'windows' => (deviceInfo as WindowsDeviceInfo).majorVersion,
       String() => 0,
     };

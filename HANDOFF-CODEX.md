@@ -2,6 +2,8 @@
 
 ## Windows follow-up (2026-10-17)
 
+- A subsequent device screenshot reported `MissingPluginException` for `dev.fluttercommunity.plus/device_info`. `PlatformPlugin` now implements the three native startup channels (device info, package metadata, sandbox paths); OHOS preferences use `AtomicFilePreferencesStore`, and API-version parsing reads generic device data instead of a dynamic getter. The revised package uses build number `2026101702`.
+- Focused system/path/preferences tests compiled but the host Flutter test engine could not load their kernel (`Invalid SDK hash`). The real OHOS SDK compiled the new ETS plugin and produced a fresh unsigned HAP; device startup still needs retesting.
 - Publish the app source to `seabodylibra/FlClash-ohos`, branch `port-ohos`.
 - The Core DNS patch is published to `seabodylibra/Clash.Meta-ohos`, branch `port-ohos`, commit `aa8ac85043282029a54f1cf3de18bc8d254dd2b6`. The parent gitlink must reference that commit.
 - A real SDK is installed at `D:\DevEco-Studio\sdk`. The installed compiler reports `26.0.0.105`; the app build profile uses compatible/target SDK `6.1.1(24)`.

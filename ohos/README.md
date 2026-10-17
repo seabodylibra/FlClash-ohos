@@ -46,7 +46,15 @@ actual Hvigor task results before using this artifact. Configure your own debug
 signing in DevEco Studio, or re-sign the unsigned HAP using your own certificate
 and provisioning profile. Signing material is local and is not included here.
 
-The app has not passed device verification. Startup, desktop icon visibility,
-permissions, VPN start/stop, profile editing, and background behavior still need
-testing on the target device. The previously generated HAP predates the latest
-ETS stop-result fix and must be rebuilt to test it.
+`EntryAbility` registers `PlatformPlugin` before Dart startup. It implements the
+device information, package metadata, and path-provider channels used during
+bootstrap with the real OHOS SDK. Shared preferences use the existing atomic
+file store inside the app's sandbox. OHOS has no path-provider downloads API;
+the app uses its sandbox directory when it needs a download fallback.
+
+The app has not passed device verification. A device test of the earlier package
+reached Flutter but failed on the missing device-info channel; the startup
+platform implementations above address that failure and the other bootstrap
+dependencies. Re-sign and retest startup, permissions, VPN start/stop, profile
+editing, and background behavior. Host Flutter tests currently fail to launch
+with `Invalid SDK hash` in this OHOS fork; that is not a passing test result.

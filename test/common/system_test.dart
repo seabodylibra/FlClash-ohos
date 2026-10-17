@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -142,6 +143,32 @@ void main() {
     system.runProcess = Process.run;
     MacOS().runProcess = Process.run;
     linuxElevation.run = Process.run;
+  });
+
+  group('deviceApiVersion', () {
+    test('reads OHOS API version from generic device data', () {
+      final info = BaseDeviceInfo({
+        'sdkApiVersion': 24,
+        'deviceType': 'tablet',
+      });
+
+      expect(System.deviceApiVersion(info, operatingSystem: 'ohos'), 24);
+    });
+
+    test('rejects an OHOS response without a numeric API version', () {
+      for (final data in <Map<String, dynamic>>[
+        {},
+        {'sdkApiVersion': '24'},
+      ]) {
+        expect(
+          () => System.deviceApiVersion(
+            BaseDeviceInfo(data),
+            operatingSystem: 'ohos',
+          ),
+          throwsA(isA<TypeError>()),
+        );
+      }
+    });
   });
 
   group('statArguments', () {
