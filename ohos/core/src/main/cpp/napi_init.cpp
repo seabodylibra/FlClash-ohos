@@ -1,5 +1,4 @@
 #include "napi/native_api.h"
-#include "bride.h"
 #include "libclash.h"
 #include <cstring>
 #include <cstdlib>
@@ -156,8 +155,8 @@ static napi_value InvokeMethod(napi_env env, napi_callback_info info) {
 }
 
 static napi_value StartTUN(napi_env env, napi_callback_info info) {
-    size_t argc = 7;
-    napi_value argv[7] = {nullptr};
+    size_t argc = 8;
+    napi_value argv[8] = {nullptr};
     napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     TunInterface *tunInterface = new TunInterface();
     napi_create_threadsafe_function(env, argv[0], nullptr, CreateValueStringUtf8(env, "protect"), 0, 1, nullptr, nullptr, nullptr, ProtectCallJsCallback, &tunInterface->protect);

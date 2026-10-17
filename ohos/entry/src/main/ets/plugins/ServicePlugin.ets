@@ -16,6 +16,8 @@ import EntryAbility from '../entryability/EntryAbility';
 export default class ServicePlugin implements FlutterPlugin, MethodCallHandler {
   private parent: EntryAbility
   private channel: MethodChannel | undefined
+  private commandRevision: number = 0
+  private transition: Promise<void> = Promise.resolve()
 
   constructor(entryAbility: EntryAbility) {
     this.parent = entryAbility
@@ -95,35 +97,68 @@ export default class ServicePlugin implements FlutterPlugin, MethodCallHandler {
 
   private handleStart(call: MethodCall, result: MethodResult): void {
     const revision = call.args as number
-    if (globalState.runState === RunState.stop) {
-      globalState.runState = RunState.pending
-      const options = globalState.state?.vpnOptions ?? new VpnOptions()
-      const resultStub = new ResultStub("handleStart", (runTime: number) => {
-        globalState.runTime = runTime
-        globalState.runState = runTime !== 0 ? RunState.start : RunState.stop
-      })
-      this.parent.handleStartService(options, globalState.runTime, resultStub).catch(() => {
-        globalState.runState = RunState.stop
-        this.channel?.invokeMethod("stopped", revision)
-      })
-    }
+    this.commandRevision = revision
+    this.enqueueTransition(revision, () => this.startService(revision))
     result.success(true)
   }
 
   private handleStop(call: MethodCall, result: MethodResult): void {
     const revision = call.args as number
-    if (globalState.runState === RunState.start) {
-      globalState.runState = RunState.pending
+    this.commandRevision = revision
+    this.enqueueTransition(revision, () => this.stopService(revision))
+    result.success(true)
+  }
+
+  private enqueueTransition(revision: number, action: () => Promise<void>): void {
+    this.transition = this.transition.then(async () => {
+      if (revision === this.commandRevision) await action()
+    }).catch((err: Error) => {
+      console.log(`Service transition failed <= ${err.message ?? err}`)
+    })
+  }
+
+  private async startService(revision: number): Promise<void> {
+    if (globalState.runState === RunState.start) return
+    globalState.runState = RunState.pending
+    const result = new Promise<number>((resolve) => {
+      const resultStub = new ResultStub("handleStart", (runTime: number) => {
+        globalState.runTime = runTime
+        globalState.runState = runTime !== 0 ? RunState.start : RunState.stop
+        resolve(runTime)
+      })
+      const options = globalState.state?.vpnOptions ?? new VpnOptions()
+      this.parent.handleStartService(options, globalState.runTime, resultStub).catch((err: Error) => {
+        globalState.runTime = 0
+        globalState.runState = RunState.stop
+        console.log(`Service start failed <= ${err.message ?? err}`)
+        resolve(0)
+      })
+    })
+    const runTime = await result
+    if (runTime === 0 && revision === this.commandRevision) {
+      this.channel?.invokeMethod("stopped", revision)
+    }
+  }
+
+  private async stopService(revision: number): Promise<void> {
+    if (globalState.runState === RunState.stop) return
+    globalState.runState = RunState.pending
+    const result = new Promise<boolean>((resolve) => {
       const resultStub = new ResultStub("handleStop", (runTime: number) => {
         globalState.runTime = runTime
         globalState.runState = RunState.stop
-        this.channel?.invokeMethod("stopped", revision)
+        resolve(true)
       })
-      this.parent.handleStopService(resultStub).catch(() => {
+      this.parent.handleStopService(resultStub).catch((err: Error) => {
         globalState.runState = RunState.start
+        console.log(`Service stop failed <= ${err.message ?? err}`)
+        resolve(false)
       })
+    })
+    const stopped = await result
+    if (stopped && revision === this.commandRevision) {
+      this.channel?.invokeMethod("stopped", revision)
     }
-    result.success(true)
   }
 
   private handleGetRunTime(result: MethodResult): void {

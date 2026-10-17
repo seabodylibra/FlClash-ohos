@@ -1,5 +1,20 @@
 # FlClash HarmonyOS port: handoff checklist
 
+## Windows follow-up (2026-10-17)
+
+- Publish the app source to `seabodylibra/FlClash-ohos`, branch `port-ohos`.
+- The Core DNS patch is published to `seabodylibra/Clash.Meta-ohos`, branch `port-ohos`, commit `aa8ac85043282029a54f1cf3de18bc8d254dd2b6`. The parent gitlink must reference that commit.
+- A real SDK is installed at `D:\DevEco-Studio\sdk`. The installed compiler reports `26.0.0.105`; the app build profile uses compatible/target SDK `6.1.1(24)`.
+- The Windows OHOS Flutter toolchain reports `3.47.7-ohos-1.0.0`, Dart `3.13.3`. Go and Rust are installed under the local ignored `.dart_tool/toolchains/` directory; add them to the build process PATH.
+- Go, Rust, NAPI, and Hvigor previously produced `ohos/entry/build/default/outputs/default/entry-default-unsigned.hap`. No signing configuration was present, so the Flutter wrapper failed while looking for a signed output. This is an unsigned build artifact, not a verified installable package.
+- The existing HAP predates the final ETS stop-result correction; rebuild before testing that correction. No device verification has been completed by the agent. The user reported installation without a visible desktop icon; that issue remains unresolved.
+- `flutter pub get` passed outside the sandbox, as did `flutter analyze --no-pub --no-fatal-infos` and `git diff --check`.
+- `CGO_ENABLED=0 go vet . ./cmd/...` passed. Outside the sandbox, `CGO_ENABLED=0 go test .` failed in `TestHandleValidateProxiesLeavesARunningProxysResolverInPlace`: the Windows safe-path error names `C:\outside`, while the assertion expects the proxy name. This failure remains unresolved.
+- The focused `flutter test --no-pub test/common/network_test.dart test/plugins/service_test.dart` run did not reach the tests: native hooks encountered path quoting, sandbox access, and Cargo default-toolchain discovery failures. Rust itself is installed; test execution is not verified.
+- Windows build prerequisites, commands, unsigned output location, and signing handoff are in [ohos/README.md](ohos/README.md).
+
+The remaining sections preserve the original Linux archive handoff. Their environment paths, missing-tool reports, and check results describe that earlier host.
+
 ## Goal and source
 
 - Continue validating and completing the FlClash HarmonyOS port on the `port-ohos` branch.
@@ -11,7 +26,7 @@
 ## Current repository state
 
 - Branch remains `port-ohos`; HEAD remains `f8a368b`.
-- Nine changes are staged for review; no commit or push has been made:
+- The archive contained 11 staged paths: nine code/script file paths, this handoff document, and the submodule gitlink. The original "nine changes" count excluded the document and gitlink; it was not the complete staged path count. No commit or push had been made at that handoff:
   - Added the missing `core/Clash.Meta` gitlink at `8380d0e7462f061a964323e9bf3129a236fcc5d5`.
   - Regenerated four Freezed/Riverpod output files.
   - Fixed a missing `globalState` import in `lib/manager/core_manager.dart`.

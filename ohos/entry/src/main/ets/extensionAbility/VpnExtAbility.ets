@@ -250,12 +250,15 @@ export default class VpnExtAbility extends VpnExtensionAbility {
   handleStartService(vpnOptions: VpnOptions, runTime: number, remote: rpc.RemoteObject): void {
     if (vpnOptions.enable) {
       const vpnConfig = this.toVpnConfig(vpnOptions)
-      this.vpnConnection?.create(vpnConfig).then((fd: number) => {
+      this.vpnConnection?.create(vpnConfig).then(async (fd: number) => {
         const options = JSON.stringify({
           mtu: vpnOptions.mtu,
           'congestion-controller': vpnOptions.congestionController,
         })
-        startTUN(
+        const vpnId = deviceInfo.sdkApiVersion >= 20
+          ? await this.vpnConnection?.generateVpnId()
+          : util.generateRandomUUID(true)
+        const started = startTUN(
           (socketFd: number): Promise<void> => this.vpnConnection?.protect(socketFd).catch((err: Error) => {
             console.log(`Call protect failed <= ${err.message ?? err}`)
           }) ?? Promise.resolve(),
@@ -267,14 +270,14 @@ export default class VpnExtAbility extends VpnExtensionAbility {
           this.toTunDns(vpnOptions),
           options,
         )
-        if (deviceInfo.sdkApiVersion >= 20) {
-          this.vpnConnection?.generateVpnId().then((vpnId) => { this.vpnId = vpnId })
-        } else {
-          this.vpnId = util.generateRandomUUID(true);
-        }
+        if (!started) throw new Error('Core failed to start the TUN')
+        this.vpnId = vpnId
         this.networkManager?.subscribe(updateDns)
         this.runTime = runTime !== 0 ? runTime : Date.now()
       }).catch((err: Error) => {
+        this.runTime = 0
+        this.vpnId = undefined
+        this.vpnConnection?.destroy()
         console.log(`Call startTUN failed <= ${err.message ?? err}`)
       }).finally(() => {
         this.sendResult(remote, this.runTime)

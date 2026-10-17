@@ -338,6 +338,22 @@ void main() {
   });
 
   group('event dispatch', () {
+    test('forwards extension crash reports as Core crash events', () async {
+      final listener = _RecordingListener();
+      Service().addListener(listener);
+      addTearDown(() => Service().removeListener(listener));
+
+      await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .handlePlatformMessage(
+            channelName,
+            codec.encodeMethodCall(const MethodCall('crash', 'extension lost')),
+            null,
+          );
+
+      expect(listener.events.single.type, CoreEventType.crash);
+      expect(listener.events.single.data, 'extension lost');
+    });
+
     test('fans a batched event list out to every listener', () async {
       final first = _RecordingListener();
       final second = _RecordingListener();

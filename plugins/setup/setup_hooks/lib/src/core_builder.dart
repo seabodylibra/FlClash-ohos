@@ -96,6 +96,7 @@ final class CoreBuilder implements Builder {
   BuildRequest? requestFor(BuildInput input) {
     if (!input.config.buildCodeAssets) return null;
     final code = input.config.code;
+    if (_isOhos(code)) return null;
     // Android's Core is the gomobile AAR the :core Gradle module builds.
     final platform = switch (code.targetOS) {
       OS.linux => 'linux',
@@ -124,6 +125,19 @@ final class CoreBuilder implements Builder {
       harnessDir: p.join(p.fromUri(input.packageRoot), 'setup_hooks'),
       target: target,
     );
+  }
+
+  bool _isOhos(CodeConfig code) {
+    if (code.targetOS != OS.linux ||
+        code.targetArchitecture != Architecture.arm64) {
+      return false;
+    }
+    final compiler = code.cCompiler?.compiler;
+    if (compiler == null) return false;
+    final llvmBin = File.fromUri(compiler).parent;
+    return File(
+      '${llvmBin.path}${p.separator}aarch64-unknown-linux-ohos-clang',
+    ).existsSync();
   }
 
   String repositoryRoot(BuildInput input) {

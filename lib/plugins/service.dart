@@ -57,6 +57,16 @@ class Service {
             );
           }
           break;
+        case 'crash':
+          final event = CoreEvent(
+            type: CoreEventType.crash,
+            data: call.arguments as String? ?? '',
+          );
+          _dispatch(
+            'crash event',
+            (listener) => listener.onServiceEvent(event),
+          );
+          break;
         case 'stopped':
           // A report stamped before the newest command no longer describes it.
           if (call.arguments != _commandRevision || !_startRequested) {
