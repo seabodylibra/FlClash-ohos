@@ -83,6 +83,10 @@ static napi_value CreateValueUint8Array(napi_env env, const char *data, size_t l
 }
 
 void InvokeMethodCallJsCallback(napi_env env, napi_value callback, void* context, void* data) {
+    if (env == nullptr || callback == nullptr) {
+        free(data);
+        return;
+    }
     napi_value global = nullptr;
     napi_get_global(env, &global);
     char *strData = reinterpret_cast<char*>(data);
@@ -150,7 +154,9 @@ static napi_value InvokeMethod(napi_env env, napi_callback_info info) {
     napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     InvokeInterface *invokeInterface = new InvokeInterface();
     napi_create_threadsafe_function(env, argv[0], nullptr, CreateValueStringUtf8(env, "onResult"), 0, 1, nullptr, nullptr, nullptr, InvokeMethodCallJsCallback, &invokeInterface->onResult);
-    invokeMethod(invokeInterface, GetValueStringUtf8(env, argv[1]));
+    char *params = GetValueStringUtf8(env, argv[1]);
+    invokeMethod(invokeInterface, params);
+    free(params);
     return nullptr;
 }
 
@@ -174,7 +180,11 @@ static napi_value QuickSetup(napi_env env, napi_callback_info info) {
     napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
     InvokeInterface *invokeInterface = new InvokeInterface();
     napi_create_threadsafe_function(env, argv[0], nullptr, CreateValueStringUtf8(env, "onResult"), 0, 1, nullptr, nullptr, nullptr, InvokeMethodCallJsCallback, &invokeInterface->onResult);
-    quickSetup(invokeInterface, GetValueStringUtf8(env, argv[1]), GetValueStringUtf8(env, argv[2]));
+    char *initParams = GetValueStringUtf8(env, argv[1]);
+    char *setupParams = GetValueStringUtf8(env, argv[2]);
+    quickSetup(invokeInterface, initParams, setupParams);
+    free(initParams);
+    free(setupParams);
     return nullptr;
 }
 
@@ -239,7 +249,7 @@ static napi_value ResetNetwork(napi_env env, napi_callback_info info) {
     return nullptr;
 }
 
-static void call_reply_impl(void *callback, const char *data) {
+static void enqueue_result(void *callback, const char *data) {
     InvokeInterface *invokeInterface = reinterpret_cast<InvokeInterface*>(callback);
     char *dataCopy = nullptr;
     if (data != nullptr) {
@@ -247,11 +257,20 @@ static void call_reply_impl(void *callback, const char *data) {
         dataCopy = static_cast<char*>(malloc(length + 1));
         std::memcpy(dataCopy, data, length + 1);
     }
-    napi_call_threadsafe_function(invokeInterface->onResult, dataCopy, napi_tsfn_nonblocking);
+    if (napi_call_threadsafe_function(invokeInterface->onResult, dataCopy, napi_tsfn_nonblocking) != napi_ok) {
+        free(dataCopy);
+    }
+}
+
+static void call_reply_impl(void *callback, const char *data) {
+    auto *invokeInterface = reinterpret_cast<InvokeInterface*>(callback);
+    enqueue_result(callback, data);
+    napi_release_threadsafe_function(invokeInterface->onResult, napi_tsfn_release);
+    delete invokeInterface;
 }
 
 static void call_event_impl(void *listener, const char *data) {
-    call_reply_impl(listener, data);
+    enqueue_result(listener, data);
 }
 
 static int call_protect_impl(void *tun_callbacks, int fd) {
@@ -301,8 +320,14 @@ static napi_value Init(napi_env env, napi_value exports)
         { "resetNetwork", nullptr, ResetNetwork, nullptr, nullptr, nullptr, napi_default, nullptr }
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
-    napi_value result = nullptr;
-    napi_get_undefined(env, &result);
-    return result;
+    return exports;
 }
 EXTERN_C_END
+
+static napi_module coreModule = {
+    1, 0, nullptr, Init, "core", nullptr, {0}
+};
+
+extern "C" __attribute__((constructor)) void RegisterCoreModule() {
+    napi_module_register(&coreModule);
+}

@@ -1,7 +1,7 @@
 export const invokeMethod: (onResult: (data: Uint8Array) => void, params: string) => void;
 export const startTUN: (protect: (fd: number) => Promise<void>, resolveUid: (protocol: number, source: string, target: string) => number, resolvePackage: (uid: number) => string, fd: number, stack: string, address: string, dns: string, options: string) => boolean;
-export const quickSetup: (onResult: (data: string) => void, initParams: string, setupParams: string) => void;
-export const setEventListener: (listener?: (data: string) => void) => void;
+export const quickSetup: (onResult: (data: Uint8Array) => void, initParams: string, setupParams: string) => void;
+export const setEventListener: (listener?: (data: Uint8Array) => void) => void;
 export const getTotalTraffic: (onlyStatisticsProxy: boolean) => string;
 export const getTraffic: (onlyStatisticsProxy: boolean) => string;
 export const stopTun: () => void;

@@ -237,7 +237,9 @@ export default class VpnExtAbility extends VpnExtensionAbility {
   }
 
   handleSetEventListener(remote: rpc.RemoteObject): void {
-    setEventListener((callbackData: string) => { this.sendCallback(remote, callbackData) })
+    setEventListener((callbackData: Uint8Array) => {
+      this.sendCallback(remote, new util.TextDecoder().decodeToString(callbackData))
+    })
   }
 
   handleInvokeMethod(data: string, remote: rpc.RemoteObject): void {
@@ -305,7 +307,9 @@ export default class VpnExtAbility extends VpnExtensionAbility {
   }
 
   handleQuickSetup(initParams: string, setupParams: string, remote: rpc.RemoteObject): void {
-    quickSetup((callbackData: string) => { this.sendCallback(remote, callbackData) }, initParams, setupParams)
+    quickSetup((callbackData: Uint8Array) => {
+      this.sendCallback(remote, new util.TextDecoder().decodeToString(callbackData))
+    }, initParams, setupParams)
   }
 }
 

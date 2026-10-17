@@ -30,6 +30,9 @@ export class ChunkedSender {
         send.reclaim()
         reply.reclaim()
       })
+      if (result.errCode !== 0) {
+        throw new Error(`Core IPC request ${code} failed: ${result.errCode}`)
+      }
     }
     return result as rpc.RequestResult
   }
