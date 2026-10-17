@@ -30,6 +30,7 @@ $env:HOS_SDK_HOME = 'D:\DevEco-Studio\sdk'
 $env:OHOS_NDK_HOME = "$env:HOS_SDK_HOME\default\openharmony"
 flutter pub get
 pwsh -File tool/patch_ohos_ui_dependencies.ps1
+pwsh -File tool/patch_ohos_sqlite.ps1
 bash tool/build_libclash_ohos.sh
 flutter build hap --debug --no-pub
 ```
@@ -38,6 +39,14 @@ The reviewed UI dependency patch adds OHOS handling to `material_ui` and
 `cupertino_ui` in the resolved package cache. Reapply it after changing or
 reinstalling those dependencies. The Go command produces the shared library and
 its C header from source; the Flutter build hook produces the Rust library.
+
+The SQLite patch is pinned to `sqlite3` 3.7.0 and downloads checksum-verified
+SQLite 3.53.4 sources. The hook detects the OHOS NDK compiler and builds against
+its sysroot with undefined-symbol link errors enabled. This fork reports OHOS
+as Linux ARM64 to native hooks, so the default SQLite download is a glibc binary
+that fails to load on OHOS (`fcntl64: symbol not found`). Other targets keep
+the upstream SQLite hook. Reapply this patch after repairing the package cache;
+review the hook and source pin before upgrading `sqlite3`.
 
 Without a signing configuration, Hvigor can produce
 `ohos/entry/build/default/outputs/default/entry-default-unsigned.hap` while the
