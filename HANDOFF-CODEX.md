@@ -2,6 +2,9 @@
 
 ## Windows follow-up (2026-10-17)
 
+- The `d200c44` package registered `core`, but ArkTS imports still failed with `SyntaxError: the requested module 'core' does not provide an export name 'invokeMethod'`: `napi_define_properties` used `napi_default`, whose properties are not enumerable, so the ESM namespace stayed empty. `2026101706` defines the ten methods with `napi_default_jsproperty`; device retest pending.
+- The workspace moved to the space-free path `D:\Projects\FlClash-ohos`. `D:\Projects\fix-flclash-shortcut.ps1` recreates the old `D:\Projects\flclash ohos` path as a junction once the tool that holds it (the running OpenCode process) exits.
+
 - The `dca6734` package reached the profile import screen, but `validateConfig` never returned. Its packaged `libcore.so` had no NAPI registration at all (no `napi_module_register` import, no constructor entry), so `requireNapi('core')` exposed no methods. `2026101705` registers the module, returns the exports object from `Init`, decodes `Uint8Array` callbacks in the ETS layer, propagates IPC errors, and times out unanswered Core calls. The packaged library now shows `RegisterCoreModule`, `napi_module_register`, and `napi_define_properties`; SQLite still exports all 77 Dart symbols with no glibc or `fcntl64` references.
 - Hvigor 26 builds a shell string without quoting `--target_path` and `flutter.sdk`, so a project path containing spaces fails at `ohpm install` or `FlutterTask`. The release build was made from a clean copy at a space-free path; keep OHOS builds out of paths with spaces until the tool windows quoting.
 

@@ -308,16 +308,16 @@ static napi_value Init(napi_env env, napi_value exports)
     setBridgeFuncs(call_reply_impl, call_event_impl, call_protect_impl, call_resolve_uid_impl, call_resolve_package_impl, call_free_string_impl);
 
     napi_property_descriptor desc[] = {
-        { "invokeMethod", nullptr, InvokeMethod, nullptr, nullptr, nullptr, napi_default, nullptr },
-        { "startTUN", nullptr, StartTUN, nullptr, nullptr, nullptr, napi_default, nullptr },
-        { "quickSetup", nullptr, QuickSetup, nullptr, nullptr, nullptr, napi_default, nullptr },
-        { "setEventListener", nullptr, SetEventListener, nullptr, nullptr, nullptr, napi_default, nullptr },
-        { "getTotalTraffic", nullptr, GetTotalTraffic, nullptr, nullptr, nullptr, napi_default, nullptr },
-        { "getTraffic", nullptr, GetTraffic, nullptr, nullptr, nullptr, napi_default, nullptr },
-        { "stopTun", nullptr, StopTun, nullptr, nullptr, nullptr, napi_default, nullptr },
-        { "forceGC", nullptr, ForceGC, nullptr, nullptr, nullptr, napi_default, nullptr },
-        { "updateDns", nullptr, UpdateDns, nullptr, nullptr, nullptr, napi_default, nullptr },
-        { "resetNetwork", nullptr, ResetNetwork, nullptr, nullptr, nullptr, napi_default, nullptr }
+        { "invokeMethod", nullptr, InvokeMethod, nullptr, nullptr, nullptr, napi_default_jsproperty, nullptr },
+        { "startTUN", nullptr, StartTUN, nullptr, nullptr, nullptr, napi_default_jsproperty, nullptr },
+        { "quickSetup", nullptr, QuickSetup, nullptr, nullptr, nullptr, napi_default_jsproperty, nullptr },
+        { "setEventListener", nullptr, SetEventListener, nullptr, nullptr, nullptr, napi_default_jsproperty, nullptr },
+        { "getTotalTraffic", nullptr, GetTotalTraffic, nullptr, nullptr, nullptr, napi_default_jsproperty, nullptr },
+        { "getTraffic", nullptr, GetTraffic, nullptr, nullptr, nullptr, napi_default_jsproperty, nullptr },
+        { "stopTun", nullptr, StopTun, nullptr, nullptr, nullptr, napi_default_jsproperty, nullptr },
+        { "forceGC", nullptr, ForceGC, nullptr, nullptr, nullptr, napi_default_jsproperty, nullptr },
+        { "updateDns", nullptr, UpdateDns, nullptr, nullptr, nullptr, napi_default_jsproperty, nullptr },
+        { "resetNetwork", nullptr, ResetNetwork, nullptr, nullptr, nullptr, napi_default_jsproperty, nullptr }
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;
